@@ -3,6 +3,7 @@ from typing import List, Optional
 from uuid import UUID, uuid4
 import testdb
 from pydantic import BaseModel
+import auth
 
 app = FastAPI()
 
