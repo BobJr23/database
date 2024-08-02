@@ -1,24 +1,15 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from typing import List, Optional
 from uuid import UUID, uuid4
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+import testdb
+from pydantic import BaseModel
 
-load_dotenv()
-DB_URL = os.getenv("DATABASE_URL")
 app = FastAPI()
 
 
-engine = create_engine(
-    DB_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
+class Student(BaseModel):
+    name: str
+    age: int
 
 
 @app.get("/")
@@ -30,6 +21,20 @@ async def root():
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
+
+@app.post("/new-student/", response_model=Student)
+async def create_student(student: Student):
+    testdb.create_student(student.name, student.age)
+    return student
+
+
+@app.get("/students/", response_model=List[Student])
+async def get_students():
+    students = testdb.get_students()
+    return students
+
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
