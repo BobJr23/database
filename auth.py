@@ -47,6 +47,13 @@ class User(BaseModel):
     name: str or None = None
 
 
+class CustomerModel(BaseModel):
+    id: str
+    name: str
+    age: int
+    licenses: dict
+
+
 class UserInDB(User):
     hashed_password: str
 

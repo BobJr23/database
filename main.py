@@ -53,6 +53,11 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
+@app.get("/users/me", response_model=User)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
 if __name__ == "__main__":
     import uvicorn
 
