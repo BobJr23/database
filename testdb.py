@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, Boolean
 from dotenv import load_dotenv
 import os
 
@@ -11,6 +11,14 @@ engine = create_engine(DB_URL)
 SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 Base = declarative_base()
+
+
+class License(Base):
+    __tablename__ = "licenses"
+
+    id = Column(String, primary_key=True)
+    expiration = Column(String)
+    used = Column(Boolean)
 
 
 class Student(Base):
@@ -49,19 +57,23 @@ def get_students():
     return session.query(Student).all()
 
 
+def get_customers():
+    return session.query(Customer).all()
+
+
 if __name__ == "__main__":
-    # Base.metadata.create_all(bind=engine)
-    # create_customer(
-    #     "Joe",
-    #     22,
-    #     licenses={"testID": {"id": "testID", "expiration": "today", "used": False}},
-    # )
+    Base.metadata.create_all(bind=engine)
+    create_customer(
+        "Joe",
+        22,
+        licenses={"testID": {"id": "testID", "expiration": "today", "used": False}},
+    )
     create_student("Joe", 22)
     print("Students")
-    students = session.query(Student).all()
+    students = get_students()
     for student in students:
         print(student.name, student.age, student.id)
     print("\nCustomers")
-    customers = session.query(Customer).all()
+    customers = get_customers()
     for customer in customers:
         print(customer.name, customer.age, customer.id, customer.licenses["testID"])

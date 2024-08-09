@@ -8,8 +8,9 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-
+# BASED ON FASTAPI DOCS
 load_dotenv()
+WEATHER_KEY = os.getenv("WEATHER_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 HashedPassword = os.getenv("HASH_PASS")
@@ -24,6 +25,9 @@ db = {
         "disabled": False,
     }
 }
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 # from fastapi docs
@@ -56,10 +60,6 @@ class CustomerModel(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def verify_password(plain_password, hashed_password):
